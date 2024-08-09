@@ -1,46 +1,69 @@
-import { products } from "../data/products.js";
-import fs from 'fs';
+import fs from 'fs'
 
 export class ProductsManager {
     constructor(path) {
-        this.path = path;
+        this.path = path
+        this.products = []
     }
 
-    static async getProducts() {
-        console.log("Productos obtenidos:", products); // Log para depuración
-        return products;
+    async getProducts() {
+        try {
+            const data = await fs.promises.readFile(this.path, 'utf8')
+            this.products = JSON.parse(data)
+            return this.products
+        } catch (error) {
+            console.error(error)
+            return []
+        }
     }
 
-    static async addProduct(producto = {}) {
-        let products = await this.getProducts()
+    async addProduct(producto = {}) {
         let id = 1
-        if (products.length > 0) {
-            id = Math.max(...products.map(d => d.id)) + 1
+        if (this.products.length > 0) {
+            id = Math.max(...this.products.map(d => d.id)) + 1
         }
         let nuevoProducto = {
             id,
             ...producto
-        }
+        };
 
-        products.push(nuevoProducto)
+        this.products.push(nuevoProducto)
 
-        await fs.promises.writeFile(this.path, JSON.stringify(products, null, 5))
+        await fs.promises.writeFile(this.path, JSON.stringify(this.products, null, 5))
         return nuevoProducto
     }
 
-    static async updateProduct(pid, aModificar = {}) {
-        let products = await this.getProducts()
-        let indiceProductos = products.findIndex(h => h.id === pid)
+    async updateProduct(pid, aModificar = {}) {
+        let indiceProductos = this.products.findIndex(h => h.id === pid)
         if (indiceProductos === -1) {
-            throw new Error(`Error: no existe id ${id}`)
+            throw new Error(`Error: no existe id ${pid}`)
         }
-        products[indiceProductos] = {
-            ...products[indiceProductos],
+        this.products[indiceProductos] = {
+            ...this.products[indiceProductos],
             ...aModificar,
             pid
-        }
-        await fs.promises.writeFile(this.path, JSON.stringify(products, null, 5))
-        return products[indiceProductos]
+        };
+        await fs.promises.writeFile(this.path, JSON.stringify(this.products, null, 5))
+        return this.products[indiceProductos]
     }
 
+    async deleteProduct(pid) {
+        let products = await this.getProducts()
+        let indiceProductos = products.findIndex(h => h.id == pid)
+        if (indiceProductos === -1) {
+            throw new Error(`Error: no existe id ${pid}`)
+        }
+        let cantidad0 = products.length
+        products = products.filter(h => h.id != pid)
+        let cantidad1 = products.length
+
+        try {
+            await fs.promises.writeFile(this.path, JSON.stringify(products, null, 5))
+        } catch (error) {
+            console.error(`Error al escribir el archivo: ${error}`)
+
+            return cantidad0 - cantidad1
+        }
+
+    }
 }
