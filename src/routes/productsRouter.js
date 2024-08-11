@@ -36,7 +36,18 @@ router.get("/:pid", (req, res) => {
 })
 
 router.post("/", async (req, res) => {
-    let { code, ...otros } = req.body
+    let { code, title, price, category, thumbnails, stock, status, description } = req.body
+
+    const priceNumero = Number(price)
+    const stockNumero = Number(stock)
+
+    const statusBooleano = Boolean(status)
+
+    if (isNaN(priceNumero) || isNaN(stockNumero)) {
+        res.setHeader('Content-Type', 'application/json')
+        return res.status(400).json({ error: 'Los valores de price y stock deben ser números válidos' })
+    }
+
     if (!code) {
         res.setHeader('Content-Type', 'application/json')
         return res.status(400).json({ error: 'Ingrese un codigo Valido' })
@@ -50,20 +61,25 @@ router.post("/", async (req, res) => {
     }
 
     try {
-        let productoNuevo = await productsManager.addProduct({ code, ...otros })
+        let productoNuevo = await productsManager.addProduct({
+            code,
+            title,
+            price: priceNumero,
+            category,
+            thumbnails,
+            stock: stockNumero,
+            status: statusBooleano,
+            description
+        });
         res.setHeader('Content-Type', 'application/json')
         return res.status(200).json({ productoNuevo })
-
     } catch (error) {
-        console.log(error)
-        return res.status(500).json(
-            {
-                error: 'Error inesperado98 - Intente mas tarde',
-                detalle: `${error.mensaje}`
-            })
-
+        console.log(error);
+        return res.status(500).json({
+            error: 'Error inesperado98 - Intente mas tarde',
+            detalle: `${error.mensaje}`
+        });
     }
-
 })
 
 router.put("/:pid", async (req, res) => {
@@ -94,7 +110,7 @@ router.put("/:pid", async (req, res) => {
         return res.status(400).json({ error: `Producto con ${pid} no fue encontrado` })
     }
 
-    const { title, price, category, thumbnails, stock, code, status, description } = req.body;
+    const { title, price, category, thumbnails, stock, code, status, description } = req.body
     let productoModificado = {
         ...producto,
         title: title || producto.title,
@@ -108,8 +124,8 @@ router.put("/:pid", async (req, res) => {
 
     }
     delete req.body.id
-    
-    
+
+
     let aModificar = req.body
 
     delete aModificar.pid
@@ -139,10 +155,9 @@ router.put("/:pid", async (req, res) => {
 
 router.delete("/:pid", async (req, res) => {
     let { pid } = req.params
-    if(isNaN(pid)){
-        // return res.send("id debe ser numerico")
-        res.setHeader('Content-Type','application/json');
-        return res.status(400).json({error:`id debe ser numerico`})
+    if (isNaN(pid)) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ error: `id debe ser numerico` })
     }
     try {
         await productsManager.deleteProduct(pid)

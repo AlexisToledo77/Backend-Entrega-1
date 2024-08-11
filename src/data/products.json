@@ -109,7 +109,17 @@
           "stock": 25,
           "code": "neon007",
           "status": true,
-          "description": "Descripcion Neon Carita Acrilico",
-          "pid": 10
+          "description": "Descripcion Neon Carita Acrilico"
+     },
+     {
+          "id": 11,
+          "code": "pos001",
+          "title": "Cartel testPost",
+          "price": 10999,
+          "category": "cartelesNeonAcrilico",
+          "thumbnails": "../assets/test1.png'",
+          "stock": 99,
+          "status": true,
+          "description": "testPost"
      }
 ]
