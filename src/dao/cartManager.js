@@ -14,9 +14,9 @@ class CartManager {
     }
 
     static async addCart() {
-        const carts = await this.getCarts()
+        const carts = await this.getCarts();
         const newCart = {
-            id: cart1(), 
+            id: CartManager.generateId(),
             products: []
         };
 
@@ -33,13 +33,13 @@ class CartManager {
             const cart = carts.find(c => c.id === cid)
 
             if (!cart) {
-                return null
+                throw new Error(`Cart with id ${cid} not found`);
             }
 
             return cart.products
         } catch (error) {
-            console.error('Error retrieving cart products:', error.message)
-            throw new Error('Error retrieving cart products')
+            console.error(error);
+            return [];
         }
     }
 
@@ -49,25 +49,29 @@ class CartManager {
         if (!cart) {
             throw new Error(`Cart with id ${pid} not found.`)
         }
-    
+
         const products = await ProductsManager.getProducts()
         const product = products.find(p => p.id === pid)
         if (!product) {
             throw new Error(`Product with id ${pid} not found.`)
         }
-    
+
         const productIndex = cart.products.findIndex(p => p.product === pid)
         if (productIndex === -1) {
             cart.products.push({ product: pid, quantity: 1 })
         } else {
             cart.products[productIndex].quantity += 1
         }
-    
+
         await fs.promises.writeFile(cartsFilePath, JSON.stringify(carts, null, 2))
-    
+
         return cart.products
     }
-    
+    static generateId = (items) => {
+        const ids = items.map(item => item.id);
+        return ids.length ? Math.max(...ids) + 1 : 1;
+    };
+
 }
 
 export default CartManager
