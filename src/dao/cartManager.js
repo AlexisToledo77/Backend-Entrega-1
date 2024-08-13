@@ -41,7 +41,7 @@ class CartManager {
             const cart = carts.find(c => c.id === cid)
 
             if (!cart) {
-                throw new Error(`Cart with id ${cid} not found`)
+                throw new Error(`Carrito con id ${cid} no encontrado`)
             }
 
             return cart.products
@@ -66,7 +66,7 @@ class CartManager {
         const products = await ProductsManager.getProducts()
         const product = products.find(p => p.id === pid)
         if (!product) {
-          throw new Error(`Product with id ${pid} not found.`)
+          throw new Error(`Producto con id: ${pid} no encontrado.`)
         }
       
         const productIndex = cart.products.findIndex(p => p.product.id === pid)
