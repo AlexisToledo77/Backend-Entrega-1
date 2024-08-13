@@ -156,6 +156,7 @@ router.put("/:pid", async (req, res) => {
 router.delete("/:pid", async (req, res) => {
     let { pid } = req.params
     if (isNaN(pid)) {
+
         res.setHeader('Content-Type', 'application/json');
         return res.status(400).json({ error: `id debe ser numerico` })
     }

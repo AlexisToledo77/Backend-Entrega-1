@@ -1,37 +1,73 @@
 import fs from 'fs'
+import path from 'path'
+import { ProductsManager } from "./productsManager.js"
 
-export class CartManager {
-    constructor(path) {
-        this.path = path
-        this.carts = []
+const cartsFilePath = path.resolve('src/data/cart.json')
+
+class CartManager {
+    static async getCarts() {
+        if (fs.existsSync(cartsFilePath)) {
+            return JSON.parse(await fs.promises.readFile(cartsFilePath, 'utf-8'))
+        } else {
+            return []
+        }
     }
 
-    async addCart(producto = {}) {
-        let id = 1
-        if (this.carts.length > 0) {
-            id = Math.max(...this.carts.map(d => d.id)) + 1
-        }
-        let nuevoCarrito = {
-            id,
-            ...producto
+    static async addCart() {
+        const carts = await this.getCarts()
+        const newCart = {
+            id: cart1(), 
+            products: []
         };
 
-        this.carts.push(nuevoCarrito)
+        carts.push(newCart)
 
-        await fs.promises.writeFile(this.path, JSON.stringify(this.carts, null, 5))
-        return nuevoCarrito
+        await fs.promises.writeFile(cartsFilePath, JSON.stringify(carts, null, 2))
+
+        return newCart
     }
 
+    static async getCartProducts(cid) {
+        try {
+            const carts = await this.getCarts()
+            const cart = carts.find(c => c.id === cid)
 
+            if (!cart) {
+                return null
+            }
 
+            return cart.products
+        } catch (error) {
+            console.error('Error retrieving cart products:', error.message)
+            throw new Error('Error retrieving cart products')
+        }
+    }
 
-
-
-
-
-
-
-
-
-
+    static async addProductToCart(cid, pid) {
+        const carts = await this.getCarts()
+        const cart = carts.find(c => c.id === cid)
+        if (!cart) {
+            throw new Error(`Cart with id ${pid} not found.`)
+        }
+    
+        const products = await ProductsManager.getProducts()
+        const product = products.find(p => p.id === pid)
+        if (!product) {
+            throw new Error(`Product with id ${pid} not found.`)
+        }
+    
+        const productIndex = cart.products.findIndex(p => p.product === pid)
+        if (productIndex === -1) {
+            cart.products.push({ product: pid, quantity: 1 })
+        } else {
+            cart.products[productIndex].quantity += 1
+        }
+    
+        await fs.promises.writeFile(cartsFilePath, JSON.stringify(carts, null, 2))
+    
+        return cart.products
+    }
+    
 }
+
+export default CartManager

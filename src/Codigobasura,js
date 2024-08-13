@@ -1,0 +1,61 @@
+// router.get('/:cid', async (req, res) => {
+//     let { cid } = req.params
+//     let carrito = `Carrito ${cid}`
+
+//     res.setHeader('Content-Type', 'application/json')
+//     return res.status(200).json({ carrito })
+// })
+
+// router.get('/', async (req, res) => {
+
+//     let carritos = await CartManager.get()
+
+//     res.setHeader('Content-Type', 'application/json')
+//     return res.status(200).json({ carritos })
+// })
+
+//PRIMER POST
+// router.post('/:cid/product/:pid', async (req, res) => {
+//     try {
+//         const { cid, pid } = req.params.cid
+//         const actualizarCarrito = await CartsManager.agregarProductos(cid, pid)
+//         res.json(actualizarCarrito)
+//     } catch (error) {
+//         if (error.message.includes('Cart with id')) {
+//             return res.status(404).json({ error: error.message })
+//         }
+//         if (error.message.includes('Product with id')) {
+//             return res.status(404).json({ error: error.message })
+//         }
+//         console.error('Error al agregar productos al carrito:', error.message);
+//         res.status(500).json({ error: 'Error al agregar productos al carrito' })
+//     }
+
+
+   //segundo POST
+
+    // router.post('/', async (req, res) => {
+    //     let { cid, pid } = req.body
+    //     if (!cid || !pid) {
+    //         res.setHeader('Content-Type', 'application/json')
+    //         return res.status(400).json({ error: "complete Carrito ID / Producto ID" })
+    //     }
+
+    //     try {
+    //         let nuevoCarrito = await CartManager.create({ cid, pid })
+    //         res.setHeader('Content-Type', 'application/json')
+    //         console.log(`Producto ${pid} agregado`)
+    //         return res.status(201).json({ nuevoCarrito })
+            
+
+    //     } catch (error) {
+    //         console.log(error)
+    //         res.setHeader('Content-Type', 'application/json')
+    //         return res.status(500).json(
+    //             {
+    //                 error: 'Error al crear carrito',
+    //                 detalle: error.message
+    //             }
+    //         )
+
+    //     }

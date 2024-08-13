@@ -1,6 +1,10 @@
 import express from 'express'
 import { router as productsRouter } from './routes/productsRouter.js'
 import { router as cartRouter } from './routes/cartRouter.js'
+import CartManager from './dao/cartManager.js';
+
+const cartManager = new CartManager();
+cartManager.path = "./src/data/carritos.json"
 
 const PORT = 8080
 const app = express()
@@ -19,3 +23,4 @@ app.get('/', (req, res) => {
 const server = app.listen(PORT, () => {
     console.log(`Server escuchando en puerto ${PORT}`)
 })
+
