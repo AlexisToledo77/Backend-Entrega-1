@@ -3,14 +3,13 @@ import CartManager from '../dao/cartManager.js'
 
 const router = express.Router()
 
- 
 router.post('/', async (req, res) => {
     try {
-        const { cid, pid } = req.body;
-        const newCart = await CartManager.addCart(cid, pid);
-        res.status(201).json(newCart);
+        const { cid, pid } = req.body
+        const newCart = await CartManager.addCart(cid, pid)
+        res.status(201).json(newCart)
     } catch (error) {
-        res.status(500).json({ error: 'Error creating cart' });
+        res.status(500).json({ error: 'Error creating cart' })
     }
 })
 

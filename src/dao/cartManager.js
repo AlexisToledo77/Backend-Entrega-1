@@ -14,25 +14,25 @@ class CartManager {
     }
 
     static async addCart(cid, pid) {
-        const carts = await this.getCarts();
+        const carts = await this.getCarts()
         const newCart = {
             id: cid,
             products: []
         };
 
         if (pid) {
-            const products = await ProductsManager.getProducts();
-            const product = products.find(p => p.id === pid);
+            const products = await ProductsManager.getProducts()
+            const product = products.find(p => p.id === pid)
             if (product) {
-                newCart.products.push({ product, quantity: 1 });
+                newCart.products.push({ product, quantity: 1 })
             }
         }
 
         carts.push(newCart);
 
-        await fs.promises.writeFile(cartsFilePath, JSON.stringify(carts, null, 2));
+        await fs.promises.writeFile(cartsFilePath, JSON.stringify(carts, null, 2))
 
-        return newCart.id;
+        return newCart.id
     }
 
     static async getCartProducts(cid) {
@@ -41,49 +41,49 @@ class CartManager {
             const cart = carts.find(c => c.id === cid)
 
             if (!cart) {
-                throw new Error(`Cart with id ${cid} not found`);
+                throw new Error(`Cart with id ${cid} not found`)
             }
 
             return cart.products
         } catch (error) {
-            console.error(error);
+            console.error(error)
             return [];
         }
     }
 
     static async addProductToCart(cid, pid) {
-        const carts = await this.getCarts();
-        let cart = carts.find(c => c.id === cid);
+        const carts = await this.getCarts()
+        let cart = carts.find(c => c.id === cid)
       
         if (!cart) {
           cart = {
             id: cid,
             products: []
           };
-          carts.push(cart);
+          carts.push(cart)
         }
       
-        const products = await ProductsManager.getProducts();
-        const product = products.find(p => p.id === pid);
+        const products = await ProductsManager.getProducts()
+        const product = products.find(p => p.id === pid)
         if (!product) {
-          throw new Error(`Product with id ${pid} not found.`);
+          throw new Error(`Product with id ${pid} not found.`)
         }
       
-        const productIndex = cart.products.findIndex(p => p.product.id === pid);
+        const productIndex = cart.products.findIndex(p => p.product.id === pid)
         if (productIndex === -1) {
-          cart.products.push({ product, quantity: 1 });
+          cart.products.push({ product, quantity: 1 })
         } else {
-          cart.products[productIndex].quantity += 1;
+          cart.products[productIndex].quantity += 1
         }
       
-        await fs.promises.writeFile(cartsFilePath, JSON.stringify(carts, null, 2));
+        await fs.promises.writeFile(cartsFilePath, JSON.stringify(carts, null, 2))
       
         return cart.products;
       }
 
     static generateId = (items) => {
         const ids = items.map(item => item.id)
-        return ids.length ? Math.max(...ids) + 1 : 1;
+        return ids.length ? Math.max(...ids) + 1 : 1
     }
 
 }
