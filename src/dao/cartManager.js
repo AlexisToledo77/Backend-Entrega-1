@@ -1,7 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import { ProductsManager } from "./productsManager.js"
-
+ 
 const cartsFilePath = path.resolve('src/data/cart.json')
 
 class CartManager {
@@ -13,18 +13,26 @@ class CartManager {
         }
     }
 
-    static async addCart() {
+    static async addCart(cid, pid) {
         const carts = await this.getCarts();
         const newCart = {
-            id: CartManager.generateId(),
+            id: cid,
             products: []
         };
 
-        carts.push(newCart)
+        if (pid) {
+            const products = await ProductsManager.getProducts();
+            const product = products.find(p => p.id === pid);
+            if (product) {
+                newCart.products.push({ product, quantity: 1 });
+            }
+        }
 
-        await fs.promises.writeFile(cartsFilePath, JSON.stringify(carts, null, 2))
+        carts.push(newCart);
 
-        return newCart
+        await fs.promises.writeFile(cartsFilePath, JSON.stringify(carts, null, 2));
+
+        return newCart.id;
     }
 
     static async getCartProducts(cid) {
@@ -44,33 +52,39 @@ class CartManager {
     }
 
     static async addProductToCart(cid, pid) {
-        const carts = await this.getCarts()
-        const cart = carts.find(c => c.id === cid)
+        const carts = await this.getCarts();
+        let cart = carts.find(c => c.id === cid);
+      
         if (!cart) {
-            throw new Error(`Cart with id ${pid} not found.`)
+          cart = {
+            id: cid,
+            products: []
+          };
+          carts.push(cart);
         }
-
-        const products = await ProductsManager.getProducts()
-        const product = products.find(p => p.id === pid)
+      
+        const products = await ProductsManager.getProducts();
+        const product = products.find(p => p.id === pid);
         if (!product) {
-            throw new Error(`Product with id ${pid} not found.`)
+          throw new Error(`Product with id ${pid} not found.`);
         }
-
-        const productIndex = cart.products.findIndex(p => p.product === pid)
+      
+        const productIndex = cart.products.findIndex(p => p.product.id === pid);
         if (productIndex === -1) {
-            cart.products.push({ product: pid, quantity: 1 })
+          cart.products.push({ product, quantity: 1 });
         } else {
-            cart.products[productIndex].quantity += 1
+          cart.products[productIndex].quantity += 1;
         }
+      
+        await fs.promises.writeFile(cartsFilePath, JSON.stringify(carts, null, 2));
+      
+        return cart.products;
+      }
 
-        await fs.promises.writeFile(cartsFilePath, JSON.stringify(carts, null, 2))
-
-        return cart.products
-    }
     static generateId = (items) => {
-        const ids = items.map(item => item.id);
+        const ids = items.map(item => item.id)
         return ids.length ? Math.max(...ids) + 1 : 1;
-    };
+    }
 
 }
 
