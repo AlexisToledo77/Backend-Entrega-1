@@ -1,6 +1,6 @@
 import fs from 'fs'
 import path from 'path'
-import { ProductsManager } from "./productsManager.js"
+import ProductsManager from "./productsManager.js";
  
 const cartsFilePath = path.resolve('src/data/cart.json')
 

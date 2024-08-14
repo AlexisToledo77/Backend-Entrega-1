@@ -1,9 +1,12 @@
 import fs from 'fs'
 
-export class ProductsManager {
-    constructor(path) {
-        this.path = path
-        this.products = []
+
+class ProductsManager {
+    static path;
+    static products = [];
+
+    static async init(path) {
+        this.path = path;
     }
 
     async getProducts() {
@@ -67,5 +70,5 @@ export class ProductsManager {
 
     }
 }
-
+export default ProductsManager;
 
